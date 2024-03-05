@@ -1,168 +1,140 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const tempMovieData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-  },
-  {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-  },
-];
+// Watched View Imports
+import { WatchedSummary } from "./components/WatchedView/WatchedSummary";
+import { WatchedMovieList } from "./components/WatchedView/WatchedMovieList";
 
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+// Movie View Imports
+import { MovieDetails } from "./components/MovieView/MovieDetails";
+import { MovieList } from "./components/MovieView/MovieList";
 
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+// Container Imports
+import { Box } from "./components/Utils/Box";
+import { Main } from "./components/Utils/Main";
+
+//NAVbar imports
+import { NumResults } from "./components/NavView/NumResults";
+import { Search } from "./components/NavView/Search";
+import { Logo } from "./components/NavView/Logo";
+import { NavBar } from "./components/NavView/NavBar";
+
+// Helper Imports
+import { ErrorMessage } from "./components/Utils/ErrorMessage";
+import { Loader } from "./components/Utils/Loader";
+
+// we want to keep this out of the render logic or it will be rerendered everytime the component is, we don't need or want this
+// so outside it stays
+export const Key = "4b956081";
 
 export default function App() {
+  // query state
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isOpen1, setIsOpen1] = useState(true);
-  const [isOpen2, setIsOpen2] = useState(true);
+  // searched movies state
+  const [movies, setMovies] = useState([]);
+  // watched movies state
+  const [watched, setWatched] = useState([]);
+  // loading state for our loading message
+  const [isLoading, setIsLoading] = useState(false);
+  // state for showing if we have an error
+  const [error, setError] = useState("");
+  // setting our selected movie, we only want to save the id
+  // instead of the full object
+  const [selectedId, setSelectedId] = useState(null);
 
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  // handler for selecting the movies
+  function handleMovieSelection(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+
+  function handleCloseSelectedMovie() {
+    setSelectedId(null);
+  }
+
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+  // we want to fetch our api data and while we can use promises we're going to use good old async functions we also need to note that we need to put the async function inside a new function to prevent race conditions
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        // create a loading state
+        try {
+          // set loading state
+          setIsLoading(true);
+          setError("");
+          // get our data
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${Key}&s=${query}`
+          );
+          // error handling, if no response, throw an error
+          if (!res.ok) throw new Error("Movie Fetching Failed");
+          // save our response
+          const data = await res.json();
+          if (data.response === "False") throw new Error("Movie Not Found");
+          // set our movie state
+          setMovies(data.Search);
+          console.log(data);
+        } catch (err) {
+          // display error
+          setError(err.message);
+        } finally {
+          // we need to log the data search for movies, can't use the movies state or else stale
+          setIsLoading(false);
+        }
+      }
+
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+      // fetch our movies
+      fetchMovies();
+    },
+    // the effect is triggered when query is populated
+    [query]
+  );
+
+  // this is actually the correct albeit barebones way to fetch data esp on mount, in larger apps we will use ext libraries
+  // but that's a larger application
 
   return (
     <>
-      <nav className="nav-bar">
-        <div className="logo">
-          <span role="img">🍿</span>
-          <h1>usePopcorn</h1>
-        </div>
-        <input
-          className="search"
-          type="text"
-          placeholder="Search movies..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <p className="num-results">
-          Found <strong>{movies.length}</strong> results
-        </p>
-      </nav>
+      {/* Prop drilling solved thanks to composition below */}
+      <NavBar>
+        <Logo />
+        <Search query={query} setQuery={setQuery} />
+        <NumResults movies={movies} />
+      </NavBar>
 
-      <main className="main">
-        <div className="box">
-          <button
-            className="btn-toggle"
-            onClick={() => setIsOpen1((open) => !open)}
-          >
-            {isOpen1 ? "–" : "+"}
-          </button>
-          {isOpen1 && (
-            <ul className="list">
-              {movies?.map((movie) => (
-                <li key={movie.imdbID}>
-                  <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                  <h3>{movie.Title}</h3>
-                  <div>
-                    <p>
-                      <span>🗓</span>
-                      <span>{movie.Year}</span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+      <Main>
+        <Box>
+          {isLoading && <Loader />}
+          {!isLoading && !error && (
+            <MovieList
+              movies={movies}
+              onMovieSelection={handleMovieSelection}
+            />
           )}
-        </div>
+          {error && <ErrorMessage message={error} />}
+        </Box>
 
-        <div className="box">
-          <button
-            className="btn-toggle"
-            onClick={() => setIsOpen2((open) => !open)}
-          >
-            {isOpen2 ? "–" : "+"}
-          </button>
-          {isOpen2 && (
+        <Box>
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseSelectedMovie}
+              isLoading={isLoading}
+              onAddWatched={handleAddWatched}
+            />
+          ) : (
             <>
-              <div className="summary">
-                <h2>Movies you watched</h2>
-                <div>
-                  <p>
-                    <span>#️⃣</span>
-                    <span>{watched.length} movies</span>
-                  </p>
-                  <p>
-                    <span>⭐️</span>
-                    <span>{avgImdbRating}</span>
-                  </p>
-                  <p>
-                    <span>🌟</span>
-                    <span>{avgUserRating}</span>
-                  </p>
-                  <p>
-                    <span>⏳</span>
-                    <span>{avgRuntime} min</span>
-                  </p>
-                </div>
-              </div>
-
-              <ul className="list">
-                {watched.map((movie) => (
-                  <li key={movie.imdbID}>
-                    <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                    <h3>{movie.Title}</h3>
-                    <div>
-                      <p>
-                        <span>⭐️</span>
-                        <span>{movie.imdbRating}</span>
-                      </p>
-                      <p>
-                        <span>🌟</span>
-                        <span>{movie.userRating}</span>
-                      </p>
-                      <p>
-                        <span>⏳</span>
-                        <span>{movie.runtime} min</span>
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
             </>
           )}
-        </div>
-      </main>
+        </Box>
+      </Main>
     </>
   );
 }
