@@ -50,6 +50,7 @@ export default function App() {
     setSelectedId(null);
   }
 
+  // we're creating a new array of watched movies, by setting the state. In this state setting we spread the watched movies array and append the new movie to the end
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
   }
@@ -73,7 +74,6 @@ export default function App() {
           if (data.response === "False") throw new Error("Movie Not Found");
           // set our movie state
           setMovies(data.Search);
-          console.log(data);
         } catch (err) {
           // display error
           setError(err.message);
