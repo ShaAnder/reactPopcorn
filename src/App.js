@@ -54,6 +54,12 @@ export default function App() {
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
   }
+
+  // Now we want a function to handle deleting watched movies, this will filter the movie list and return all entries that are not our movie as a new list. Then set it as our watched list.
+  function handleDeleteWatched(id) {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  }
+
   // we want to fetch our api data and while we can use promises we're going to use good old async functions we also need to note that we need to put the async function inside a new function to prevent race conditions
   useEffect(
     function () {
@@ -126,11 +132,15 @@ export default function App() {
               onCloseMovie={handleCloseSelectedMovie}
               isLoading={isLoading}
               onAddWatched={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
               <WatchedSummary watched={watched} />
-              <WatchedMovieList watched={watched} />
+              <WatchedMovieList
+                watched={watched}
+                onDeleteWatched={handleDeleteWatched}
+              />
             </>
           )}
         </Box>
