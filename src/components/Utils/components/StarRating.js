@@ -23,7 +23,14 @@ StarRating.propTypes = {
   onSetRating: PropTypes.func,
 };
 
+/**
+ * Star rating component for adding a rating section to apps
+ * @param {*} params -> utilizes default params but can accept any number of properties (we add more above)
+ * @returns a visual start rating component with the properties listed
+ * @author ShaAnder
+ */
 export default function StarRating({
+  // default settings
   maxRating = 5,
   color = "#fcc419",
   size = 30,
@@ -32,9 +39,11 @@ export default function StarRating({
   defaultRating = 0,
   onSetRating,
 }) {
+  // state for our star rating including a set rating and a temporary rating
   const [rating, setRating] = useState(0);
   const [tempRating, setTempRating] = useState(defaultRating);
 
+  // styling for the text
   const textStyle = {
     lineHeight: "1",
     margin: "0",
@@ -42,11 +51,13 @@ export default function StarRating({
     fontsize: size,
   };
 
+  // handler for the rating
   function handleRating(rating) {
     setRating(rating);
     onSetRating(rating);
   }
 
+  // jsx for the rating
   return (
     <div style={containerStyle} className={className}>
       <div style={starContainerStyle}>

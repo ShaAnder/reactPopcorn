@@ -9,8 +9,8 @@ import { MovieDetails } from "./components/MovieView/MovieDetails";
 import { MovieList } from "./components/MovieView/MovieList";
 
 // Container Imports
-import { Box } from "./components/Utils/Box";
-import { Main } from "./components/Utils/Main";
+import { Box } from "./components/Utils/components/Box";
+import { Main } from "./components/Utils/components/Main";
 
 //NAVbar imports
 import { NumResults } from "./components/NavView/NumResults";
@@ -19,8 +19,8 @@ import { Logo } from "./components/NavView/Logo";
 import { NavBar } from "./components/NavView/NavBar";
 
 // Helper Imports
-import { ErrorMessage } from "./components/Utils/ErrorMessage";
-import { Loader } from "./components/Utils/Loader";
+import { ErrorMessage } from "./components/Utils/components/ErrorMessage";
+import { Loader } from "./components/Utils/components/Loader";
 
 // we want to keep this out of the render logic or it will be rerendered everytime the component is, we don't need or want this
 // so outside it stays

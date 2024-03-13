@@ -1,3 +1,9 @@
+/**
+ * Watched movie component
+ * @param {*} params -> movie prop to get our movie, and delete watched handler to delete it from the watched list
+ * @returns jsx showing our watched movie item
+ * @author ShaAnder
+ */
 export function WatchedMovie({ movie, onDeleteWatched }) {
   return (
     <li>

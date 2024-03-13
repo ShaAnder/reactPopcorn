@@ -1,10 +1,18 @@
-import { average } from "../Utils/Average";
+import { average } from "../Utils/functions/Average";
 
+/**
+ * Watched movie summary component
+ * @param {*} params -> watched movie array, we feed this in and take the items we want for comparing later
+ * @returns the jsx for creating the summary for the movies watched
+ * @author ShaAnder
+ */
 export function WatchedSummary({ watched }) {
+  // creating a few rating averages to display on the stats summary
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(watched.map((movie) => movie.runtime));
 
+  // jsx fo the rating statistics
   return (
     <div className="summary">
       <h2>Movies you watched</h2>

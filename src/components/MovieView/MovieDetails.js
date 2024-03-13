@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
-import StarRating from "../Utils/StarRating";
+import StarRating from "../Utils/components/StarRating";
 import { Key } from "../../App";
-import { Loader } from "../Utils/Loader";
+import { Loader } from "../Utils/components/Loader";
 
+/**
+ * Movie Details component
+ * Detailed component that shows all the movie information
+ * @param {*} params -> children props (selectedId isLoading watched (state)) / OnCloseMovie and onAddWatched handlers for handling the movie close and adding to the watched list
+ * @returns the jsx that shows the movie details, rating and ability to add movie to the watched list
+ * @author ShaAnder
+ */
 export function MovieDetails({
   selectedId,
   onCloseMovie,
@@ -10,17 +17,17 @@ export function MovieDetails({
   onAddWatched,
   watched,
 }) {
-  // some state for the movie details
+  // State for the movie details and setting our star rating
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState("");
 
-  // we want to make some derived state to do a check on which movies have been watched. To accomplish this we will map over the watched movies, then just take the imdbDB entry and add it to a new array, we can now compare and hide the rating / add buttons based on if the imdb entry is in the array
+  // Derived state to check what movies we have watched, to accomplish this we map over the watched movies array and get the movie id that matches. This enables us to run a check later
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
-  // now we want to derive the rating for a specific movie
+  // Now to derive the rating, to do this we map over the watched array and get the movies userrating and store this in an array.
   const watchedUserRating = watched.map((movie) => movie.userRating);
 
-  // now we destructure the data out of the movie object, it will initially render as undefined until effect kicks in and sets the movie object (inital render bs)
+  // Here we destructure the date of the movie object so we can clean up the title and better read our data
   const {
     Title: title,
     Year: year,
@@ -34,6 +41,12 @@ export function MovieDetails({
     Genre: genre,
   } = movie;
 
+  /**
+   * AddMovie Handler function
+   * On click function for adding moview to our watched list, takes the selected movie (which we have from clicking on the movie) then strips the relevant information we want and creates a new movie object with it
+   * No return
+   * @author ShaAnder
+   */
   function handleAddMovie() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -45,26 +58,33 @@ export function MovieDetails({
       userRating,
     };
 
+    // now that we have added our movie, we want to add it to our watched array and close the movie screen
     onAddWatched(newWatchedMovie);
     onCloseMovie(selectedId);
   }
 
-  // we want to create a function to get the details whenever the movie details load, so an effect is required
+  // Use effect hook to get our movie details
   useEffect(
     function () {
+      // async function for our fetching
       async function getMovieDetails() {
         const res = await fetch(
+          // the open movie db api
           `http://www.omdbapi.com/?apikey=${Key}&i=${selectedId}`
         );
+        // turn it into a json
         const data = await res.json();
-
+        // set iyr nivue
         setMovie(data);
       }
+      // get the movie details
       getMovieDetails();
     },
+    // we want this to run only when it has a relevant id
     [selectedId]
   );
 
+  // our jsx for the movie, this is our entire string of jsx used to create the detailed movie view when we click on the movie
   return (
     <div className="details">
       {isLoading ? (
