@@ -63,6 +63,29 @@ export function MovieDetails({
     onCloseMovie(selectedId);
   }
 
+  // a common thing in apps is to allow select key presses to close modals / popups, we want to use the escape key to close the movie details. This is interacting with the dom and is thus a side effect so time for another effect (because we are using dom manipulation this is working oustide of react and it's why the useEffect hook actually is called an escape hatch so to speak)
+  useEffect(
+    function () {
+      // So we firstly want this inside the movie details component as we don't want it to trigger all the time, rather just when a movie is open
+
+      // now we need to create an actual function for the event listener to execute, we need to create the function here because it needs to be THE EXACT SAME function for addition and removal later. Cannot copy code
+      function escape(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
+      // now we do add a dom event listener, and pass in our escape function
+      document.addEventListener("keydown", escape);
+
+      // and of course we need to cleanup our effect because everytime this effect runs it adds an event listener we need to remove those event listeners when we are done with them
+      return function () {
+        document.removeEventListener("keydown", escape);
+      };
+    },
+    // finally for our dependancy array, our onCloseMovie is needed in the dependancy array as react does not know onCloseMovie so we need it here to prevent unforseen errors
+    [onCloseMovie]
+  );
+
   // Use effect hook to get our movie details
   useEffect(
     function () {
@@ -82,6 +105,21 @@ export function MovieDetails({
     },
     // we want this to run only when it has a relevant id
     [selectedId]
+  );
+
+  // we should always use deff effects for different (singular) things never try and do a lot of things with one effect. For this we set the  document title to the movie title when a movie is selected, and it should run whenever a new title is selected.
+  useEffect(
+    function () {
+      // we also want to have a guard clause in case the movie can't be found
+      if (!title) return;
+      document.title = `Movie: ${title}`;
+      // now we want to cleanup the effect by returning it to the vanilla title we do this with a returnd arrow func (a cleaup function is a returned function from an effect)
+      return () => {
+        document.title = "Use Popcorn";
+      };
+    },
+    // We don't want to use selectedID as the thing it should watch because of the issue with stale state it's going to get the id -> rerender -> then the title will be gotten. This means that it will show undefined until we click on a second option. We use title so the moment a title is found it selects that.
+    [title]
   );
 
   // our jsx for the movie, this is our entire string of jsx used to create the detailed movie view when we click on the movie

@@ -63,6 +63,9 @@ export default function App() {
   // we want to fetch our api data and while we can use promises we're going to use good old async functions we also need to note that we need to put the async function inside a new function to prevent race conditions
   useEffect(
     function () {
+      // using effects abort controller to clean up data fetching, we want to cancel previous requests to prevent race conditions (it takes the wrong request because it arrived first) in this case because we're typing letters each combination is getting saved to state and this is a problem
+      const controller = new AbortController();
+
       async function fetchMovies() {
         // create a loading state
         try {
@@ -71,7 +74,9 @@ export default function App() {
           setError("");
           // get our data
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${Key}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${Key}&s=${query}`,
+            { signal: controller.signal }
+            // now we connect the abort controller to our fetch and return it at the end of the effect
           );
           // error handling, if no response, throw an error
           if (!res.ok) throw new Error("Movie Fetching Failed");
@@ -80,9 +85,13 @@ export default function App() {
           if (data.response === "False") throw new Error("Movie Not Found");
           // set our movie state
           setMovies(data.Search);
+          // we want to set error to empty string at beginning and end to prevent errors from staying in state accidently
+          setError("");
         } catch (err) {
-          // display error
-          setError(err.message);
+          // display error / we also want to exclude the abort error so we don't get it showing up when using controller
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
         } finally {
           // we need to log the data search for movies, can't use the movies state or else stale
           setIsLoading(false);
@@ -94,8 +103,15 @@ export default function App() {
         setError("");
         return;
       }
+      // we want to close movie here because makes no sense to keep it open when we don't want it
+      handleCloseSelectedMovie();
+
       // fetch our movies
       fetchMovies();
+      // return controller here
+      return function () {
+        controller.abort();
+      };
     },
     // the effect is triggered when query is populated
     [query]
