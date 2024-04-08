@@ -147,7 +147,12 @@ export default function App() {
       {/* Prop drilling solved thanks to composition below */}
       <NavBar>
         <Logo />
-        <Search query={query} setQuery={setQuery} />
+        <Search
+          query={query}
+          setQuery={setQuery}
+          onCloseMovie={handleCloseSelectedMovie}
+          selectedId={selectedId}
+        />
         <NumResults movies={movies} />
       </NavBar>
 
