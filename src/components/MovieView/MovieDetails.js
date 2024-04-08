@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "../Utils/components/StarRating";
-import { Key } from "../../App";
-import { Loader } from "../Utils/components/Loader";
 
+import { Loader } from "../Utils/components/Loader";
+import { useKey } from "../Utils/hooks/useKey";
+
+const Key = "4b956081";
 /**
  * Movie Details component
  * Detailed component that shows all the movie information
@@ -82,28 +84,7 @@ export function MovieDetails({
     onCloseMovie(selectedId);
   }
 
-  // a common thing in apps is to allow select key presses to close modals / popups, we want to use the escape key to close the movie details. This is interacting with the dom and is thus a side effect so time for another effect (because we are using dom manipulation this is working oustide of react and it's why the useEffect hook actually is called an escape hatch so to speak)
-  useEffect(
-    function () {
-      // So we firstly want this inside the movie details component as we don't want it to trigger all the time, rather just when a movie is open
-
-      // now we need to create an actual function for the event listener to execute, we need to create the function here because it needs to be THE EXACT SAME function for addition and removal later. Cannot copy code
-      function escape(e) {
-        if (e.code === "Escape") {
-          onCloseMovie();
-        }
-      }
-      // now we do add a dom event listener, and pass in our escape function
-      document.addEventListener("keydown", escape);
-
-      // and of course we need to cleanup our effect because everytime this effect runs it adds an event listener we need to remove those event listeners when we are done with them
-      return function () {
-        document.removeEventListener("keydown", escape);
-      };
-    },
-    // finally for our dependancy array, our onCloseMovie is needed in the dependancy array as react does not know onCloseMovie so we need it here to prevent unforseen errors
-    [onCloseMovie]
-  );
+  useKey("Escape", onCloseMovie);
 
   // Use effect hook to get our movie details
   useEffect(

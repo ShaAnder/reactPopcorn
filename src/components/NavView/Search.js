@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useKey } from "../Utils/hooks/useKey";
 
 /**
  * Search results component for nav bar
@@ -10,33 +11,12 @@ import { useEffect, useRef } from "react";
 export function Search({ query, setQuery, onCloseMovie, selectedId }) {
   const inputEl = useRef(null);
 
-  useEffect(
-    function () {
-      // we want to stick our ref usage into a callback function for cleaning later
-
-      function callback(e) {
-        // we also need to make sure that hitting enter does not search when clearing fields
-        if (document.activeElement === inputEl.current) return;
-
-        // check if it's actually the enter key
-        if (e.code === "Enter") {
-          inputEl.current.focus();
-          // now we want to clear fields and close the windows when it's not focus
-          setQuery("");
-          // finally closing the selected movie too in case one is open
-          onCloseMovie(selectedId);
-        }
-      }
-
-      // now let's add a new feature in the form of using a keypress to select the input field whenever it's pressed (no refresh needed)
-
-      document.addEventListener("keydown", callback);
-      return () => document.addEventListener("keydown", callback);
-
-      // finally set our dependency
-    },
-    [setQuery, onCloseMovie, selectedId]
-  );
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+    onCloseMovie(selectedId);
+  });
 
   return (
     <input
