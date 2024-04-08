@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "../Utils/components/StarRating";
 import { Key } from "../../App";
 import { Loader } from "../Utils/components/Loader";
@@ -20,6 +20,23 @@ export function MovieDetails({
   // State for the movie details and setting our star rating
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState("");
+
+  // aside from dom element saving we as stated before can use refs to save data and timeouts. SO what if we wanted to store data on how many times a user clicked on the rating (indicating potential indecisiveness when giving said rating)
+
+  // well we use a ref, this way we can save the info into the state of the object WITHOUT causing a rerender, because it does not get rendered to the screen
+  const countRef = useRef(0);
+
+  // then we use an effect to mutate the ref, because it's disallowed in render logic
+
+  useEffect(
+    function () {
+      // check if there is a user rating, if not count ref
+      if (userRating) {
+        countRef.current = countRef.current++;
+      }
+    },
+    [userRating]
+  );
 
   // Derived state to check what movies we have watched, to accomplish this we map over the watched movies array and get the movie id that matches. This enables us to run a check later
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
@@ -56,6 +73,8 @@ export function MovieDetails({
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      // now we add the ref here for tracking the number of reratings the user provided
+      countRatingDecisions: countRef.current,
     };
 
     // now that we have added our movie, we want to add it to our watched array and close the movie screen
