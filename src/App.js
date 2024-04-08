@@ -29,14 +29,25 @@ export const Key = "4b956081";
 export default function App() {
   // query state
   const [query, setQuery] = useState("");
+
   // searched movies state
   const [movies, setMovies] = useState([]);
-  // watched movies state
-  const [watched, setWatched] = useState([]);
+
+  // watched movies state, originally we used an array to save it to but now we use a callback function to get our data from local storage
+  // const [watched, setWatched] = useState([]);
+
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    // we need to parse the data or else it will not map properly because stored data is stored as a string
+    return JSON.parse(storedValue);
+  });
+
   // loading state for our loading message
   const [isLoading, setIsLoading] = useState(false);
+
   // state for showing if we have an error
   const [error, setError] = useState("");
+
   // setting our selected movie, we only want to save the id
   // instead of the full object
   const [selectedId, setSelectedId] = useState(null);
@@ -59,6 +70,17 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  // Now we're going to create a means of saving our watched list, we will do this with an effect, as it's again a sideeffect interacting outside of the scope of the program
+
+  // we want it to run on initial render and whenever the watched movies array is updated, so we set watched as our dependancy array
+  useEffect(
+    function () {
+      // local storage also only takes the key value pair as strings, so we need to stringify our watched array
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   // we want to fetch our api data and while we can use promises we're going to use good old async functions we also need to note that we need to put the async function inside a new function to prevent race conditions
   useEffect(
