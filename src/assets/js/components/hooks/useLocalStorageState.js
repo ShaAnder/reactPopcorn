@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 /**
- * useMovies Hook for finding the movie data
- * @param {*} params -> children props (our movies)
- * @returns the jsx that displays the number of movies, just gets the length of the movie results and models it as a number to view
+ * useLocal storage hook for saving and loading to the local storage
+ * @param {*} params -> (initialstate, key) -> takes the initial state argument ("") and our key which is whatever the state is saved under
+ * @returns the value currently in local storage as well as the setter to set new local storage data
  * @author ShaAnder
  */
 export function useLocalStorageState(initialState, key) {

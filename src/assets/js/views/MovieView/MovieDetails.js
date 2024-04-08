@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import StarRating from "../Utils/components/StarRating";
+import StarRating from "../../components/utils/StarRating";
 
-import { Loader } from "../Utils/components/Loader";
-import { useKey } from "../Utils/hooks/useKey";
+import { Loader } from "../../components/utils/Loader";
+import { useKey } from "../../components/hooks/useKey";
 
-const Key = "4b956081";
 /**
  * Movie Details component
  * Detailed component that shows all the movie information
@@ -18,18 +17,16 @@ export function MovieDetails({
   isLoading,
   onAddWatched,
   watched,
+  Key,
 }) {
-  // State for the movie details and setting our star rating
+  // State for movie details and star rating
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState("");
 
-  // aside from dom element saving we as stated before can use refs to save data and timeouts. SO what if we wanted to store data on how many times a user clicked on the rating (indicating potential indecisiveness when giving said rating)
-
-  // well we use a ref, this way we can save the info into the state of the object WITHOUT causing a rerender, because it does not get rendered to the screen
+  // Count Ref for checking user rating changes
   const countRef = useRef(0);
 
-  // then we use an effect to mutate the ref, because it's disallowed in render logic
-
+  // Effect to mutate the ref, to keep it out of renderlogic
   useEffect(
     function () {
       // check if there is a user rating, if not count ref
@@ -40,13 +37,13 @@ export function MovieDetails({
     [userRating]
   );
 
-  // Derived state to check what movies we have watched, to accomplish this we map over the watched movies array and get the movie id that matches. This enables us to run a check later
+  // Derived state to check what movies we have watched, map over the watched movies array and get the movie id that matches.
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
-  // Now to derive the rating, to do this we map over the watched array and get the movies userrating and store this in an array.
+  // Derive the rating, map over the watched array and get the movies userrating and store this in an array.
   const watchedUserRating = watched.map((movie) => movie.userRating);
 
-  // Here we destructure the date of the movie object so we can clean up the title and better read our data
+  // Destructure the data of the movie object so we can clean up the title and better read our data
   const {
     Title: title,
     Year: year,
@@ -75,15 +72,16 @@ export function MovieDetails({
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
-      // now we add the ref here for tracking the number of reratings the user provided
+      // Ref here for keeping track of count
       countRatingDecisions: countRef.current,
     };
 
-    // now that we have added our movie, we want to add it to our watched array and close the movie screen
+    // Add it to watched array and close the movie
     onAddWatched(newWatchedMovie);
     onCloseMovie(selectedId);
   }
 
+  // Use key hook for escape command
   useKey("Escape", onCloseMovie);
 
   // Use effect hook to get our movie details
@@ -104,25 +102,24 @@ export function MovieDetails({
       getMovieDetails();
     },
     // we want this to run only when it has a relevant id
-    [selectedId]
+    [selectedId, Key]
   );
 
-  // we should always use deff effects for different (singular) things never try and do a lot of things with one effect. For this we set the  document title to the movie title when a movie is selected, and it should run whenever a new title is selected.
+  // Use effect to set title to current movie
   useEffect(
     function () {
-      // we also want to have a guard clause in case the movie can't be found
       if (!title) return;
       document.title = `Movie: ${title}`;
-      // now we want to cleanup the effect by returning it to the vanilla title we do this with a returnd arrow func (a cleaup function is a returned function from an effect)
+      // Clean up the effect / reset title
       return () => {
         document.title = "Use Popcorn";
       };
     },
-    // We don't want to use selectedID as the thing it should watch because of the issue with stale state it's going to get the id -> rerender -> then the title will be gotten. This means that it will show undefined until we click on a second option. We use title so the moment a title is found it selects that.
+    // Use title in dependency array as selected ID is stale state
     [title]
   );
 
-  // our jsx for the movie, this is our entire string of jsx used to create the detailed movie view when we click on the movie
+  // our jsx for the movie
   return (
     <div className="details">
       {isLoading ? (

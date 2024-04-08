@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { useKey } from "../Utils/hooks/useKey";
+import { useRef } from "react";
+import { useKey } from "../../components/hooks/useKey";
 
 /**
  * Search results component for nav bar

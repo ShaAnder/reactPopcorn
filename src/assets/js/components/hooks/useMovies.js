@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 /**
  * useMovies Hook for finding the movie data
- * @param {*} params -> children props (our movies)
- * @returns the jsx that displays the number of movies, just gets the length of the movie results and models it as a number to view
+ * @param {*} params -> (query, callback) -> takes the query (our movie selection) and the callback(our function as arguments)
+ * @returns the movie, isLoading, error state and the Key variable for use throughout the codebase
  * @author ShaAnder
  */
 export function useMovies(query, callback) {
@@ -75,5 +75,5 @@ export function useMovies(query, callback) {
     [query]
   );
   // now we return these state pieces
-  return { movies, isLoading, error };
+  return { movies, isLoading, error, Key };
 }

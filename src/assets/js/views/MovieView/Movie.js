@@ -4,7 +4,6 @@
  * @returns the movie title year and poster to be modelled into the movie box / view
  * @author ShaAnder
  */
-
 export function Movie({ movie, onMovieSelection }) {
   return (
     <li

@@ -2,30 +2,30 @@
 
 import { useState } from "react";
 
-import { useMovies } from "./components/Utils/hooks/useMovies";
-import { useLocalStorageState } from "./components/Utils/hooks/useLocalStorageState";
+import { useMovies } from "./assets/js/components/hooks/useMovies";
+import { useLocalStorageState } from "./assets/js/components/hooks/useLocalStorageState";
 
 // Watched View Imports
-import { WatchedSummary } from "./components/WatchedView/WatchedSummary";
-import { WatchedMovieList } from "./components/WatchedView/WatchedMovieList";
+import { WatchedSummary } from "./assets/js/views/WatchedView/WatchedSummary";
+import { WatchedMovieList } from "./assets/js/views/WatchedView/WatchedMovieList";
 
 // Movie View Imports
-import { MovieDetails } from "./components/MovieView/MovieDetails";
-import { MovieList } from "./components/MovieView/MovieList";
+import { MovieDetails } from "./assets/js/views/MovieView/MovieDetails";
+import { MovieList } from "./assets/js/views/MovieView/MovieList";
 
 // Container Imports
-import { Box } from "./components/Utils/components/Box";
-import { Main } from "./components/Utils/components/Main";
+import { Box } from "./assets/js/components/utils/Box";
+import { Main } from "./assets/js/components/utils/Main";
 
 //NAVbar imports
-import { NumResults } from "./components/NavView/NumResults";
-import { Search } from "./components/NavView/Search";
-import { Logo } from "./components/NavView/Logo";
-import { NavBar } from "./components/NavView/NavBar";
+import { NumResults } from "./assets/js/views/NavView/NumResults";
+import { Search } from "./assets/js/views/NavView/Search";
+import { Logo } from "./assets/js/views/NavView/Logo";
+import { NavBar } from "./assets/js/views/NavView/NavBar";
 
 // Helper Imports
-import { ErrorMessage } from "./components/Utils/components/ErrorMessage";
-import { Loader } from "./components/Utils/components/Loader";
+import { ErrorMessage } from "./assets/js/components/utils/ErrorMessage";
+import { Loader } from "./assets/js/components/utils/Loader";
 
 export default function App() {
   //------- STATE -------//
@@ -35,7 +35,7 @@ export default function App() {
   //------- CUSTOM HOOKS -------//
 
   // destructure our custom hook returns back to their own data here
-  const { movies, isLoading, error } = useMovies(
+  const { movies, isLoading, error, Key } = useMovies(
     query,
     handleCloseSelectedMovie
   );
@@ -97,6 +97,7 @@ export default function App() {
               isLoading={isLoading}
               onAddWatched={handleAddWatched}
               watched={watched}
+              Key={Key}
             />
           ) : (
             <>

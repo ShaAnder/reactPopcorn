@@ -2,6 +2,7 @@ import { useState } from "react";
 // importing proptypes for typechecking (can use typescript too)
 import PropTypes from "prop-types";
 
+// container and star container css
 const containerStyle = {
   display: "flex",
   alignItems: "center",

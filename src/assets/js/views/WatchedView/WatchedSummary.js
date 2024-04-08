@@ -1,4 +1,4 @@
-import { average } from "../Utils/functions/Average";
+import { average } from "../../components/functions/Average";
 
 /**
  * Watched movie summary component
