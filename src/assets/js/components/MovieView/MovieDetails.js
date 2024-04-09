@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import StarRating from "../../components/utils/StarRating";
+import StarRating from "../utils/StarRating";
 
-import { Loader } from "../../components/utils/Loader";
-import { useKey } from "../../components/hooks/useKey";
+import { Loader } from "../utils/Loader";
+import { useKey } from "../hooks/useKey";
 
 /**
  * Movie Details component
@@ -17,7 +17,7 @@ export function MovieDetails({
   isLoading,
   onAddWatched,
   watched,
-  Key,
+  token,
 }) {
   // State for movie details and star rating
   const [movie, setMovie] = useState({});
@@ -72,7 +72,6 @@ export function MovieDetails({
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
-      // Ref here for keeping track of count
       countRatingDecisions: countRef.current,
     };
 
@@ -91,7 +90,7 @@ export function MovieDetails({
       async function getMovieDetails() {
         const res = await fetch(
           // the open movie db api
-          `http://www.omdbapi.com/?apikey=${Key}&i=${selectedId}`
+          `http://www.omdbapi.com/?apikey=${token}&i=${selectedId}`
         );
         // turn it into a json
         const data = await res.json();
@@ -102,7 +101,7 @@ export function MovieDetails({
       getMovieDetails();
     },
     // we want this to run only when it has a relevant id
-    [selectedId, Key]
+    [selectedId, token]
   );
 
   // Use effect to set title to current movie
@@ -161,8 +160,8 @@ export function MovieDetails({
                 </>
               ) : (
                 <p>
-                  You Have Already Rated This Movie with {watchedUserRating}
-                  <span>⭐</span>
+                  You Have Already Rated This Movie {watchedUserRating}
+                  <span>⭐</span>!
                 </p>
               )}
             </div>

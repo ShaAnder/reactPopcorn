@@ -6,22 +6,22 @@ import { useMovies } from "./assets/js/components/hooks/useMovies";
 import { useLocalStorageState } from "./assets/js/components/hooks/useLocalStorageState";
 
 // Watched View Imports
-import { WatchedSummary } from "./assets/js/views/WatchedView/WatchedSummary";
-import { WatchedMovieList } from "./assets/js/views/WatchedView/WatchedMovieList";
+import { WatchedSummary } from "./assets/js/components/views/WatchedView/WatchedSummary";
+import { WatchedMovieList } from "./assets/js/components/views/WatchedView/WatchedMovieList";
 
 // Movie View Imports
-import { MovieDetails } from "./assets/js/views/MovieView/MovieDetails";
-import { MovieList } from "./assets/js/views/MovieView/MovieList";
+import { MovieDetails } from "./assets/js/components/MovieView/MovieDetails";
+import { MovieList } from "./assets/js/components/MovieView/MovieList";
 
 // Container Imports
 import { Box } from "./assets/js/components/utils/Box";
 import { Main } from "./assets/js/components/utils/Main";
 
 //NAVbar imports
-import { NumResults } from "./assets/js/views/NavView/NumResults";
-import { Search } from "./assets/js/views/NavView/Search";
-import { Logo } from "./assets/js/views/NavView/Logo";
-import { NavBar } from "./assets/js/views/NavView/NavBar";
+import { NumResults } from "./assets/js/components/views/NavView/NumResults";
+import { Search } from "./assets/js/components/views/NavView/Search";
+import { Logo } from "./assets/js/components/views/NavView/Logo";
+import { NavBar } from "./assets/js/components/views/NavView/NavBar";
 
 // Helper Imports
 import { ErrorMessage } from "./assets/js/components/utils/ErrorMessage";
@@ -97,7 +97,8 @@ export default function App() {
               isLoading={isLoading}
               onAddWatched={handleAddWatched}
               watched={watched}
-              Key={Key}
+              key={selectedId}
+              token={Key}
             />
           ) : (
             <>
