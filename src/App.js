@@ -10,8 +10,8 @@ import { WatchedSummary } from "./assets/js/components/views/WatchedView/Watched
 import { WatchedMovieList } from "./assets/js/components/views/WatchedView/WatchedMovieList";
 
 // Movie View Imports
-import { MovieDetails } from "./assets/js/components/MovieView/MovieDetails";
-import { MovieList } from "./assets/js/components/MovieView/MovieList";
+import { MovieDetails } from "./assets/js/components/views/MovieView/MovieDetails";
+import { MovieList } from "./assets/js/components/views/MovieView/MovieList";
 
 // Container Imports
 import { Box } from "./assets/js/components/utils/Box";

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import StarRating from "../utils/StarRating";
+import StarRating from "../../utils/StarRating";
 
-import { Loader } from "../utils/Loader";
-import { useKey } from "../hooks/useKey";
+import { Loader } from "../../utils/Loader";
+import { useKey } from "../../hooks/useKey";
 
 /**
  * Movie Details component
@@ -30,18 +30,18 @@ export function MovieDetails({
   useEffect(
     function () {
       // check if there is a user rating, if not count ref
-      if (userRating) {
-        countRef.current = countRef.current++;
-      }
+      if (userRating) countRef.current++;
     },
     [userRating]
   );
 
-  // Derived state to check what movies we have watched, map over the watched movies array and get the movie id that matches.
+  // Derived state to check what movies we have watched
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
 
-  // Derive the rating, map over the watched array and get the movies userrating and store this in an array.
-  const watchedUserRating = watched.map((movie) => movie.userRating);
+  // Derive the rating, compare the selected ID to the imdbID if it exists apply the rating
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
 
   // Destructure the data of the movie object so we can clean up the title and better read our data
   const {
@@ -160,6 +160,7 @@ export function MovieDetails({
                 </>
               ) : (
                 <p>
+                  {console.log(watchedUserRating)}
                   You Have Already Rated This Movie {watchedUserRating}
                   <span>⭐</span>!
                 </p>
